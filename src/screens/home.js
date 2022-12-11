@@ -1,40 +1,33 @@
 import { useEffect } from 'react';
-import { Button, Text } from '@ui-kitten/components';
-import { launchImageLibraryAsync, useMediaLibraryPermissions } from 'expo-image-picker';
-
-import HomeHeader from './../components/headers/homeHeader';
-import MainLayout from './../layouts/mainLayout';
-
-import styles from './../styles/home.style';
+import { SafeAreaView } from 'react-native';
+import { Button, Layout, useTheme } from '@ui-kitten/components';
+import { launchImageLibrary } from 'react-native-image-picker';
 
 import { setItem } from './../lib/storage';
-import { SafeAreaView } from 'react-native';
+
+import HomeHeader from './../components/headers/homeHeader';
+import styles from './../styles/home.style';
+
 
 export default function HomeScreen({ navigation }) {
 
-    const [ status, requestPermission ] = useMediaLibraryPermissions();
+    const theme = useTheme();
     
     useEffect(() => {
-        requestPermission();
-        if (status?.status !== 'granted' || !status?.granted) {
-           
-            // Mostrar info que calen permissos
-            
-        } else {
-            
-            // launchImageLibraryAsync().then(result => {
-            //     console.log(result);
-            // });
-            console.log(status);
-        }
+        
     }, []);
 
     function selectImage() {
-        launchImageLibraryAsync({ base64: true }).then(result => {
 
-            if (!result.cancelled) {
+        launchImageLibrary({
+            mediaType: 'photo',
+            includeBase64: true,
+            includeExtra: true,
+            presentationStyle: 'popover',
+        }).then(res => {
+            if (res.assets.length) {
 
-                setItem('actualImage', result.uri).then(() => {
+                setItem('actualImage', res.assets[0].uri).then(() => {
 
                     navigation.navigate('Editor');
                 });
@@ -42,20 +35,16 @@ export default function HomeScreen({ navigation }) {
         });
     }
 
-    function WrappedHomeHeader(props) {
-
-        return <HomeHeader {...props} goSettings={() => navigation.navigate('Settings')} />;
-    }
 
     return (
-        <SafeAreaView>
-            
+        <SafeAreaView style={{ flex: 1 }}>
+            <HomeHeader goSettings={() => navigation.navigate('Settings')} />
+            <Layout style={{ flex: 1, backgroundColor: theme['color-primary-800'], ...styles.layout }}>
+                {/* TODO: guardar estat treball */}
+                <Button onPress={selectImage}>
+                    Selecciona la imatge
+                </Button>
+            </Layout>
         </SafeAreaView>
-        <MainLayout header={WrappedHomeHeader} style={styles.layout}>
-            {/* TODO: guardar estat treball */}
-            <Button onPress={selectImage}>
-                Selecciona la imatge
-            </Button>
-        </MainLayout>
     );
 }
