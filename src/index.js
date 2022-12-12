@@ -20,7 +20,6 @@ const screens = [
     { name: 'Editor', component: EditorScreen },
 ]
 
-
 export default function Emage() {
 
     return (<>

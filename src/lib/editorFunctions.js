@@ -18,6 +18,7 @@ export function pressTool(key) {
 
             } else {
 
+                state.history.forEach(editAction => editAction.active = false);
                 state.history[editActionIndex].active = true;
             }
         } else {

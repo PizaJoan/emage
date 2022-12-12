@@ -35,7 +35,7 @@ export default function CutToolSubmenu({ style, id }) {
 
     function pressSubmenuEditTool(data, newSelected) {
 
-        if (newSelected === selected) newSelected = false;
+        if (newSelected === selected) return;
 
         setSelected(newSelected);
 

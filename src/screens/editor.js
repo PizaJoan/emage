@@ -1,9 +1,10 @@
 import { useEffect, useState, useMemo } from 'react';
-import { View, Dimensions, Image } from 'react-native';
+import { View, Dimensions, } from 'react-native';
 import { Layout, useTheme } from '@ui-kitten/components';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Gesture, GestureDetector, GestureHandlerRootView, ScrollView } from 'react-native-gesture-handler';
 import Animated, { SlideInLeft, SlideOutLeft, useAnimatedStyle, useSharedValue, withTiming } from 'react-native-reanimated';
+import { Canvas, Image, useImage, useCanvasRef } from '@shopify/react-native-skia';
 
 import EditorContext from './../lib/editorContext'
 import EditorHeader from './../components/headers/editorHeader';
@@ -23,29 +24,33 @@ const screenMidHeight = screenHeight / 2;
 
 export default function EditorScreen({ navigation }) {
 
+    const [ imageURL, setImageURL ] = useState('');
     const theme = useTheme();
-
-    const [ imageURL, setImageURL ] = useState(false);
+    const image = useImage(imageURL);
     const [ state, setState ] = useState({
         activeTool: false,
         history: [],
         updateState: updateState,
+        imageWidth: imageWidth,
+        imageHeight: imageHeight,
     });
+
+    useEffect(() => {
+        
+        getItem('actualImage').then(setImageURL).catch(console.log);
+
+    }, []);
+
     function updateState(newState) {
         setState(newState);
     }
-
+    const canvasRef = useCanvasRef();
     const scale = useSharedValue(1);
     const prevScale = useSharedValue(1);
     const originX = useSharedValue(0);
     const originY = useSharedValue(0);
     const translateX = useSharedValue(0);
     const translateY = useSharedValue(0);
-
-    useEffect(() => {
-        
-        getItem('actualImage').then(setImageURL).catch(console.log);
-    }, []);
 
     const pinchGesture = useMemo(
         () => Gesture.Pinch()
@@ -130,9 +135,6 @@ export default function EditorScreen({ navigation }) {
         ]
     }));
 
-    console.log(state.history);
-    if (!imageURL) return;
-
     return (
         <SafeAreaView style={{ flex: 1 }}>
             <EditorContext.Provider value={state}>
@@ -145,18 +147,33 @@ export default function EditorScreen({ navigation }) {
                                     { 
                                         width: imageWidth,
                                         height: imageHeight,
-                                        marginTop: '18.5%',
+                                        marginHorizontal: 10,
+                                        top: '10%',
                                     },
                                     animation
                                 ]}
                             >
-                                <Image
-                                    source={{ uri: imageURL }}
-                                    style={{ 
-                                        width: imageWidth,
-                                        height: imageHeight
-                                    }}
-                                />
+                                <Canvas style={{ flex: 1 }} ref={canvasRef}>
+                                    {
+                                        image && (
+                                            <Image
+                                                image={image}
+                                                fit='contain'
+                                                x={10}
+                                                y={10}
+                                                width={imageWidth}
+                                                height={imageHeight}
+                                            />
+                                        )
+                                    }
+                                    {
+                                        state.history.map(action => {
+                                            const Tool = TOOLS.find(({ key }) => key === action.key).Tool;
+
+                                            return <Tool key={action.key} id={action.key} {...action.data} />
+                                        })
+                                    }
+                                </Canvas>
                             </Animated.View>
                         </GestureDetector>
                     </GestureHandlerRootView>
@@ -174,11 +191,11 @@ export default function EditorScreen({ navigation }) {
                                     }}
                                 >
                                     {
-                                        state.history.filter(({ active }) => active).map(({ key }) => {
+                                        state.history.filter(({ active }) => active).map(action => {
 
-                                            const Submenu = TOOLS.find(({ key }) => key === key).Submenu;
+                                            const Submenu = TOOLS.find(({ key }) => key === action.key).Submenu;
 
-                                            return <Submenu key={key} style={styles.editorTool} id={key} />
+                                            return <Submenu key={action.key} style={styles.editorTool} id={action.key} />
                                         })
                                     }
                                 </Animated.View>) :
@@ -196,8 +213,8 @@ export default function EditorScreen({ navigation }) {
                                 width: screenWidth,
                             }}
                             >
-                                {TOOLS.map(({ Tool, key }) => (
-                                    <Tool key={key} style={styles.editorTool} id={key} />
+                                {TOOLS.map(({ Menu, key }) => (
+                                    <Menu key={key} style={styles.editorTool} id={key} />
                                 ))}
                         </ScrollView>
                     </View>
