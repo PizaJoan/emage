@@ -1,16 +1,22 @@
-import { Button, Icon } from '@ui-kitten/components';
+import { Button } from '@ui-kitten/components';
+import VectorImage from 'react-native-vector-image';
 import EditorContext from './../../../lib/editorContext';
-
 
 import { pressTool } from './../../../lib/editorFunctions';
 
 
-function ScissorsIcon(props) {
+function ThermometerIcon(props) {
 
-    return <Icon {...props} name='scissors-outline' />
+    return <VectorImage 
+        source={require('./img/tint.svg')}
+        style={{
+            width: 19,
+            height: 19,
+        }}
+    />
 }
 
-export default function CutToolButton({ style, id, ...props }) {
+export default function TintToolButton({ style, id, ...props }) {
 
     const pressEditorTool = pressTool(id);
 
@@ -19,9 +25,12 @@ export default function CutToolButton({ style, id, ...props }) {
             {(data) => (
                 <Button
                     {...props}
-                    style={style}
+                    style={{
+                        ...style,
+                        paddingHorizontal: 24,
+                    }}
                     active={data.history.find(_ => _.key === id)?.active}
-                    accessoryLeft={ScissorsIcon}
+                    accessoryLeft={ThermometerIcon}
                     size={'giant'}
                     onPress={() => pressEditorTool(data)}
                 />

@@ -4,7 +4,7 @@ import { Line, Circle, vec } from '@shopify/react-native-skia';
 export default function CutToolShape({ id, data }) {
 
     return (<>
-        <Line 
+        {/* <Line 
             p1={vec(10, 40)}
             p2={vec(290, 40)}
             style='stroke'
@@ -55,7 +55,7 @@ export default function CutToolShape({ id, data }) {
             cy={410}
             r={10}
             color='white'
-        />
+        /> */}
     </>);
 }
 

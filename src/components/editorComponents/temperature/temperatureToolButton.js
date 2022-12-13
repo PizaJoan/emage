@@ -1,16 +1,15 @@
 import { Button, Icon } from '@ui-kitten/components';
 import EditorContext from './../../../lib/editorContext';
 
-
 import { pressTool } from './../../../lib/editorFunctions';
 
 
-function ScissorsIcon(props) {
+function ThermometerIcon(props) {
 
-    return <Icon {...props} name='scissors-outline' />
+    return <Icon {...props} name='thermometer-outline' />
 }
 
-export default function CutToolButton({ style, id, ...props }) {
+export default function TemperatureToolButton({ style, id, ...props }) {
 
     const pressEditorTool = pressTool(id);
 
@@ -21,7 +20,7 @@ export default function CutToolButton({ style, id, ...props }) {
                     {...props}
                     style={style}
                     active={data.history.find(_ => _.key === id)?.active}
-                    accessoryLeft={ScissorsIcon}
+                    accessoryLeft={ThermometerIcon}
                     size={'giant'}
                     onPress={() => pressEditorTool(data)}
                 />

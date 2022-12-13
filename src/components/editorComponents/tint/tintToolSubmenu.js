@@ -5,7 +5,7 @@ import DefaultSlider from './../../defaultSlider';
 import EditorContext from './../../../lib/editorContext';
 import { handleSubmenuTool } from './../../../lib/editorFunctions';
 
-export default function BrightnessSubmenu({ id }) {
+export default function TintToolSubmenu({ id }) {
 
     const handleSubmenuEditTool = handleSubmenuTool(id);
 
@@ -21,9 +21,8 @@ export default function BrightnessSubmenu({ id }) {
 
             value = Array.isArray(value) ? value[0] : value;
         
-            colorMatrix[4] = value;
-            colorMatrix[9] = value;
-            colorMatrix[14] = value;
+            colorMatrix[0] = 1 + value;
+            colorMatrix[12] = 1 + value;
 
             handleSubmenuEditTool(data, {
                 colorMatrix,
@@ -39,8 +38,8 @@ export default function BrightnessSubmenu({ id }) {
                 <DefaultSlider
                     value={data.history.find(_ => _.key === id)?.data?.lastValue || 0}
                     onValueChange={value => changeValue(data, value)}
-                    minimumValue={0}
-                    maximumValue={0.5}
+                    minimumValue={-0.2}
+                    maximumValue={0.2}
                 />
             </View>
         )}

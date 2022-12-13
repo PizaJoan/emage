@@ -1,6 +1,6 @@
 import { ColorMatrix } from '@shopify/react-native-skia';
 
-export default function BrightnessShape({ id, ...props }) {
+export default function TintToolShape({ id, ...props }) {
 
     if (!props.colorMatrix) return;
     
