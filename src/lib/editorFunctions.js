@@ -23,6 +23,7 @@ export function pressTool(key) {
             }
         } else {
 
+            if (state.history.length > 0) state.history.forEach(editAction => editAction.active = false);
             state.history.push({
                 key: key,
                 active: true,

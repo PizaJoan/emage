@@ -1,10 +1,16 @@
-import { useEffect, useState, useMemo } from 'react';
-import { View, Dimensions, } from 'react-native';
+import React, { useEffect, useState, useMemo } from 'react';
+import { View, Dimensions } from 'react-native';
 import { Layout, useTheme } from '@ui-kitten/components';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Gesture, GestureDetector, GestureHandlerRootView, ScrollView } from 'react-native-gesture-handler';
-import Animated, { SlideInLeft, SlideOutLeft, useAnimatedStyle, useSharedValue, withTiming } from 'react-native-reanimated';
+import Animated, { SlideInLeft, SlideOutLeft, useAnimatedProps, useAnimatedStyle, useSharedValue, withTiming } from 'react-native-reanimated';
 import { Canvas, Image, useImage, useCanvasRef } from '@shopify/react-native-skia';
+import { CameraRoll } from '@react-native-camera-roll/camera-roll';
+
+const RNFS = require('react-native-fs');
+// TODO: get this out on configfile
+const appName = 'Emage';
+const appFolder = RNFS.DownloadDirectoryPath + '/' + appName;
 
 import EditorContext from './../lib/editorContext'
 import EditorHeader from './../components/headers/editorHeader';
@@ -21,10 +27,10 @@ const { width: screenWidth, height: screenHeight} = Dimensions.get('screen');
 const screenMidWidth = screenWidth / 2;
 const screenMidHeight = screenHeight / 2;
 
-
 export default function EditorScreen({ navigation }) {
 
     const [ imageURL, setImageURL ] = useState('');
+    const [ imageConfig, setImageConfig ] = useState(false);
     const theme = useTheme();
     const image = useImage(imageURL);
     const [ state, setState ] = useState({
@@ -38,6 +44,7 @@ export default function EditorScreen({ navigation }) {
     useEffect(() => {
         
         getItem('actualImage').then(setImageURL).catch(console.log);
+        getItem('imageConfig').then(setImageConfig).catch(console.log);
 
     }, []);
 
@@ -51,6 +58,8 @@ export default function EditorScreen({ navigation }) {
     const originY = useSharedValue(0);
     const translateX = useSharedValue(0);
     const translateY = useSharedValue(0);
+    const originalScale = useSharedValue(0);
+    const editedScale = useSharedValue(1);
 
     const pinchGesture = useMemo(
         () => Gesture.Pinch()
@@ -115,7 +124,21 @@ export default function EditorScreen({ navigation }) {
         [ scale, prevScale, translateX, translateY, originX, originY ]
     );
 
-    const gestures = Gesture.Simultaneous(pinchGesture, panGesture, doubleTapGesture);
+    const longPressGesture = useMemo(
+        () => Gesture.LongPress()
+            .minDuration(500)
+            .onStart(() => {
+                originalScale.value = 1;
+                editedScale.value = 0;
+            })
+            .onEnd(() => {
+                originalScale.value = 0;
+                editedScale.value = 1;
+            }),
+        [ originalScale, editedScale ]
+    );
+
+    const gestures = Gesture.Simultaneous(pinchGesture, panGesture, doubleTapGesture, longPressGesture);
 
     const animation = useAnimatedStyle(() => ({
         transform: [
@@ -135,10 +158,59 @@ export default function EditorScreen({ navigation }) {
         ]
     }));
 
+    const originalStyle = useAnimatedStyle(() => ({
+        transform: [
+            { scale: originalScale.value }
+        ]
+    }));
+
+    const editedStyle = useAnimatedProps(() => ({
+        transform: [
+            { scale: editedScale.value }
+        ]
+    }));
+
+    function saveImage() {
+        
+        const editedImage = canvasRef.current.makeImageSnapshot();
+        const bytes = editedImage.encodeToBase64(6, 100);
+        console.log(bytes.length);
+
+        RNFS.exists(appFolder).then(exists => {
+            
+            if (!exists) {
+
+                RNFS.mkdir(appFolder).then(writeImage).catch(err => console.log(err.message, err.code));
+
+            } else {
+
+                writeImage();
+            }
+        });
+        function writeImage() {
+
+            const filePath = appFolder + '/prova.webp';
+
+            RNFS.writeFile(filePath, bytes, 'base64')
+                .then(res => {
+                    console.log('ress', res)
+
+                    CameraRoll.save(filePath, { type: 'photo' }).then(() => {
+
+                        RNFS.unlink(filePath).then(console.log).catch(console.log);
+                    });
+
+                })
+                .catch(err => {
+                    console.log('errr', err)
+                });
+        }
+    }
+
     return (
         <SafeAreaView style={{ flex: 1 }}>
             <EditorContext.Provider value={state}>
-                <EditorHeader style={styles.bringFront} goBack={() => navigation.goBack()} />
+                <EditorHeader style={styles.bringFront} goBack={() => navigation.goBack()} saveImage={saveImage} />
                 <Layout style={{ ...styles.layout, backgroundColor: theme['color-primary-800'] }}>
                     <GestureHandlerRootView>
                         <GestureDetector gesture={gestures}>
@@ -153,27 +225,45 @@ export default function EditorScreen({ navigation }) {
                                     animation
                                 ]}
                             >
-                                <Canvas style={{ flex: 1 }} ref={canvasRef}>
-                                    {
-                                        image && (
-                                            <Image
-                                                image={image}
-                                                fit='contain'
-                                                x={10}
-                                                y={10}
-                                                width={imageWidth}
-                                                height={imageHeight}
-                                            />
-                                        )
-                                    }
-                                    {
-                                        state.history.map(action => {
-                                            const Tool = TOOLS.find(({ key }) => key === action.key).Tool;
-
-                                            return <Tool key={action.key} id={action.key} {...action.data} />
-                                        })
-                                    }
-                                </Canvas>
+                                <Animated.View style={[{position: 'absolute', top: 0, left: 0, width: '100%', height: '100%'}, originalStyle ]}>
+                                    <Canvas style={{ flex: 1 }}>
+                                        {
+                                            image && (
+                                                <Image
+                                                    image={image}
+                                                    fit='contain'
+                                                    x={0}
+                                                    y={0}
+                                                    width={imageWidth}
+                                                    height={imageHeight}
+                                                />
+                                            )
+                                        }
+                                    </Canvas>
+                                </Animated.View>
+                                <Animated.View style={[{position: 'absolute', top: 0, left: 0, width: '100%', height: '100%'}, editedStyle]}>
+                                    <Canvas style={{ flex: 1 }} ref={canvasRef}>
+                                        {
+                                            image && (
+                                                <Image
+                                                    image={image}
+                                                    fit='contain'
+                                                    x={0}
+                                                    y={0}
+                                                    width={imageWidth}
+                                                    height={imageHeight}
+                                                />
+                                            )
+                                        }
+                                        {
+                                            state.history.map(action => {
+                                                const Tool = TOOLS.find(({ key }) => key === action.key).Tool;
+                                                
+                                                return <Tool key={action.key} id={action.key} {...action.data} />
+                                            })
+                                        }
+                                    </Canvas>
+                                </Animated.View>
                             </Animated.View>
                         </GestureDetector>
                     </GestureHandlerRootView>
