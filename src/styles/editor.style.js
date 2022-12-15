@@ -23,5 +23,12 @@ export default StyleSheet.create({
         height: 77,
         position: 'absolute',
         bottom: 76.9,
-    }
+    },
+    imageContainer: {
+        position: 'absolute',
+        top: 0,
+        left: 0,
+        width: '100%',
+        height: '100%'
+    },
 });

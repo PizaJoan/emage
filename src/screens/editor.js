@@ -1,16 +1,14 @@
 import React, { useEffect, useState, useMemo } from 'react';
-import { View, Dimensions } from 'react-native';
+import { View } from 'react-native';
 import { Layout, useTheme } from '@ui-kitten/components';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Gesture, GestureDetector, GestureHandlerRootView, ScrollView } from 'react-native-gesture-handler';
 import Animated, { SlideInLeft, SlideOutLeft, useAnimatedProps, useAnimatedStyle, useSharedValue, withTiming } from 'react-native-reanimated';
 import { Canvas, Image, useImage, useCanvasRef } from '@shopify/react-native-skia';
 import { CameraRoll } from '@react-native-camera-roll/camera-roll';
+import { appDownloadFolder, imageWidth, imageHeight, screenWidth, screenHeight, screenMidWidth, screenMidHeight, imageFormatsEquivalences } from '../lib/constants/variables';
 
 const RNFS = require('react-native-fs');
-// TODO: get this out on configfile
-const appName = 'Emage';
-const appFolder = RNFS.DownloadDirectoryPath + '/' + appName;
 
 import EditorContext from './../lib/editorContext'
 import EditorHeader from './../components/headers/editorHeader';
@@ -19,18 +17,13 @@ import styles from './../styles/editor.style';
 
 import { getItem } from './../lib/storage';
 import { TOOLS } from './../lib/constants/editorTools';
-
-const imageWidth = 300;
-const imageHeight = 450;
-
-const { width: screenWidth, height: screenHeight} = Dimensions.get('screen');
-const screenMidWidth = screenWidth / 2;
-const screenMidHeight = screenHeight / 2;
+import SaveModal from '../components/saveModal';
 
 export default function EditorScreen({ navigation }) {
 
     const [ imageURL, setImageURL ] = useState('');
     const [ imageConfig, setImageConfig ] = useState(false);
+    const [ showSaveModal, setShowSaveModal ] = useState(false);
     const theme = useTheme();
     const image = useImage(imageURL);
     const [ state, setState ] = useState({
@@ -91,6 +84,7 @@ export default function EditorScreen({ navigation }) {
 
                     originX.value = (e.allTouches[0].absoluteX + e.allTouches[1].absoluteX) / 2;
                     originY.value = (e.allTouches[0].absoluteY + e.allTouches[1].absoluteY) / 2;
+
                 } else {
 
                     originX.value = screenMidWidth + translateX.value;
@@ -170,28 +164,28 @@ export default function EditorScreen({ navigation }) {
         ]
     }));
 
-    function saveImage() {
+    function saveImage(filename, format) {
         
         const editedImage = canvasRef.current.makeImageSnapshot();
-        const bytes = editedImage.encodeToBase64(6, 100);
+        const bytes = editedImage.encodeToBase64(imageFormatsEquivalences[format], 100);
         console.log(bytes.length);
 
-        RNFS.exists(appFolder).then(exists => {
+        return RNFS.exists(appDownloadFolder).then(exists => {
             
             if (!exists) {
 
-                RNFS.mkdir(appFolder).then(writeImage).catch(err => console.log(err.message, err.code));
+                RNFS.mkdir(appDownloadFolder).then(writeImage).catch(err => console.log(err.message, err.code));
 
             } else {
 
-                writeImage();
+                return writeImage();
             }
         });
         function writeImage() {
 
-            const filePath = appFolder + '/prova.webp';
+            const filePath = appDownloadFolder + `/${filename}.${format}`;
 
-            RNFS.writeFile(filePath, bytes, 'base64')
+            return RNFS.writeFile(filePath, bytes, 'base64')
                 .then(res => {
                     console.log('ress', res)
 
@@ -210,7 +204,7 @@ export default function EditorScreen({ navigation }) {
     return (
         <SafeAreaView style={{ flex: 1 }}>
             <EditorContext.Provider value={state}>
-                <EditorHeader style={styles.bringFront} goBack={() => navigation.goBack()} saveImage={saveImage} />
+                <EditorHeader style={styles.bringFront} goBack={() => navigation.goBack()} saveImage={() => setShowSaveModal(true)} />
                 <Layout style={{ ...styles.layout, backgroundColor: theme['color-primary-800'] }}>
                     <GestureHandlerRootView>
                         <GestureDetector gesture={gestures}>
@@ -225,7 +219,7 @@ export default function EditorScreen({ navigation }) {
                                     animation
                                 ]}
                             >
-                                <Animated.View style={[{position: 'absolute', top: 0, left: 0, width: '100%', height: '100%'}, originalStyle ]}>
+                                <Animated.View style={[ styles.imageContainer, originalStyle ]}>
                                     <Canvas style={{ flex: 1 }}>
                                         {
                                             image && (
@@ -241,7 +235,7 @@ export default function EditorScreen({ navigation }) {
                                         }
                                     </Canvas>
                                 </Animated.View>
-                                <Animated.View style={[{position: 'absolute', top: 0, left: 0, width: '100%', height: '100%'}, editedStyle]}>
+                                <Animated.View style={[ styles.imageContainer, editedStyle ]}>
                                     <Canvas style={{ flex: 1 }} ref={canvasRef}>
                                         {
                                             image && (
@@ -310,6 +304,11 @@ export default function EditorScreen({ navigation }) {
                     </View>
                 </Layout>
             </EditorContext.Provider>
+            <SaveModal
+                visible={showSaveModal}
+                hideModal={() => setShowSaveModal(false)}
+                saveImage={saveImage}
+            />
         </SafeAreaView>
     );
 }
