@@ -1,7 +1,6 @@
-import { Button, Icon } from '@ui-kitten/components';
-import EditorContext from './../../../lib/editorContext';
+import { Icon } from '@ui-kitten/components';
 
-import { pressTool } from './../../../lib/editorFunctions';
+import DefaultButton from './../../defaultButton';
 
 
 function SunIcon(props) {
@@ -9,22 +8,17 @@ function SunIcon(props) {
     return <Icon {...props} name='sun-outline' />
 }
 
-export default function BrighnessToolButton({ style, id, ...props }) {
-
-    const pressEditorTool = pressTool(id);
+export default function BrighnessToolButton({ containerStyle, buttonStyle, textStyle, id, ...props }) {
 
     return (
-        <EditorContext.Consumer>
-            {(data) => (
-                <Button
-                    {...props}
-                    style={style}
-                    active={data.history.find(_ => _.key === id)?.active}
-                    accessoryLeft={SunIcon}
-                    size={'giant'}
-                    onPress={() => pressEditorTool(data)}
-                />
-            )}
-        </EditorContext.Consumer>
+        <DefaultButton
+            {...props}
+            id={id}
+            containerStyle={containerStyle}
+            buttonStyle={buttonStyle}
+            textStyle={textStyle}
+            icon={SunIcon}
+            text='Lluminositat'
+        />
     );
 }

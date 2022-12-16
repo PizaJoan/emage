@@ -1,30 +1,23 @@
-import { Button, Icon } from '@ui-kitten/components';
-import EditorContext from './../../../lib/editorContext';
+import { Icon } from '@ui-kitten/components';
 
-import { pressTool } from './../../../lib/editorFunctions';
-
+import DefaultButton from './../../defaultButton';
 
 function ThermometerIcon(props) {
 
     return <Icon {...props} name='thermometer-outline' />
 }
 
-export default function TemperatureToolButton({ style, id, ...props }) {
-
-    const pressEditorTool = pressTool(id);
+export default function TemperatureToolButton({ containerStyle, buttonStyle, textStyle, id, ...props }) {
 
     return (
-        <EditorContext.Consumer>
-            {(data) => (
-                <Button
-                    {...props}
-                    style={style}
-                    active={data.history.find(_ => _.key === id)?.active}
-                    accessoryLeft={ThermometerIcon}
-                    size={'giant'}
-                    onPress={() => pressEditorTool(data)}
-                />
-            )}
-        </EditorContext.Consumer>
+        <DefaultButton
+            {...props}
+            id={id}
+            containerStyle={containerStyle}
+            buttonStyle={buttonStyle}
+            textStyle={textStyle}
+            icon={ThermometerIcon}
+            text='Temperatura'
+        />
     );
 }

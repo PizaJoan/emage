@@ -18,7 +18,7 @@ import TintToolSubmenu from './../../components/editorComponents/tint/tintToolSu
 import TintToolShape from './../../components/editorComponents/tint/tintToolShape';
 
 export const TOOLS = [
-    { Menu: CutToolButton, Submenu: CutToolSubmenu, key: 'CUT', Tool: CutToolShape },
+    // { Menu: CutToolButton, Submenu: CutToolSubmenu, key: 'CUT', Tool: CutToolShape },
     { Menu: BrighnessToolButton, Submenu: BrightnessToolSubmenu, key: 'BRIGHTNESS', Tool: BrightnessToolShape },
     { Menu: SaturationToolButton, Submenu: SaturationToolSubmenu, key: 'SATURATION', Tool: SaturationToolShape},
     { Menu: ContrastToolButton, Submenu: ContrastToolSubmenu, key: 'CONTRAST', Tool: ContrastToolShape },

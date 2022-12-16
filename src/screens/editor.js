@@ -18,6 +18,7 @@ import styles from './../styles/editor.style';
 import { getItem } from './../lib/storage';
 import { TOOLS } from './../lib/constants/editorTools';
 import SaveModal from '../components/saveModal';
+import { handleSaveImage } from '../lib/editorFunctions';
 
 export default function EditorScreen({ navigation }) {
 
@@ -120,7 +121,7 @@ export default function EditorScreen({ navigation }) {
 
     const longPressGesture = useMemo(
         () => Gesture.LongPress()
-            .minDuration(500)
+            .minDuration(300)
             .onStart(() => {
                 originalScale.value = 1;
                 editedScale.value = 0;
@@ -164,47 +165,14 @@ export default function EditorScreen({ navigation }) {
         ]
     }));
 
-    function saveImage(filename, format) {
-        
-        const editedImage = canvasRef.current.makeImageSnapshot();
-        const bytes = editedImage.encodeToBase64(imageFormatsEquivalences[format], 100);
-        console.log(bytes.length);
-
-        return RNFS.exists(appDownloadFolder).then(exists => {
-            
-            if (!exists) {
-
-                RNFS.mkdir(appDownloadFolder).then(writeImage).catch(err => console.log(err.message, err.code));
-
-            } else {
-
-                return writeImage();
-            }
-        });
-        function writeImage() {
-
-            const filePath = appDownloadFolder + `/${filename}.${format}`;
-
-            return RNFS.writeFile(filePath, bytes, 'base64')
-                .then(res => {
-                    console.log('ress', res)
-
-                    CameraRoll.save(filePath, { type: 'photo' }).then(() => {
-
-                        RNFS.unlink(filePath).then(console.log).catch(console.log);
-                    });
-
-                })
-                .catch(err => {
-                    console.log('errr', err)
-                });
-        }
+    function goHome() {
+        navigation.goBack();
     }
 
     return (
         <SafeAreaView style={{ flex: 1 }}>
             <EditorContext.Provider value={state}>
-                <EditorHeader style={styles.bringFront} goBack={() => navigation.goBack()} saveImage={() => setShowSaveModal(true)} />
+                <EditorHeader style={styles.bringFront} goBack={goHome} saveImage={() => setShowSaveModal(true)} />
                 <Layout style={{ ...styles.layout, backgroundColor: theme['color-primary-800'] }}>
                     <GestureHandlerRootView>
                         <GestureDetector gesture={gestures}>
@@ -295,10 +263,17 @@ export default function EditorScreen({ navigation }) {
                                 ...styles.bringFront,
                                 backgroundColor: theme['color-primary-default'],
                                 width: screenWidth,
+                                bottom: 0,
                             }}
-                            >
+                        >
                                 {TOOLS.map(({ Menu, key }) => (
-                                    <Menu key={key} style={styles.editorTool} id={key} />
+                                    <Menu 
+                                        id={key}
+                                        key={key}
+                                        containerStyle={styles.editorToolContainer}
+                                        buttonStyle={styles.editorTool}
+                                        textStyle={styles.editorToolText}
+                                    />
                                 ))}
                         </ScrollView>
                     </View>
@@ -307,7 +282,7 @@ export default function EditorScreen({ navigation }) {
             <SaveModal
                 visible={showSaveModal}
                 hideModal={() => setShowSaveModal(false)}
-                saveImage={saveImage}
+                saveImage={handleSaveImage(canvasRef, goHome)}
             />
         </SafeAreaView>
     );

@@ -1,20 +1,20 @@
-import { StyleSheet, View } from 'react-native';
-import { Text, Modal, Card, Button, Icon, Input, Select, SelectItem, IndexPath, useTheme } from '@ui-kitten/components';
 import { useState } from 'react';
-import { imageFormats } from '../lib/constants/variables';
+import { StyleSheet, View, KeyboardAvoidingView, Platform } from 'react-native';
+import { Text, Modal, Card, Button, Input, Radio, RadioGroup, useTheme } from '@ui-kitten/components';
 
+import { imageFormats } from './../lib/constants/variables';
 
 export default function SaveModal({ visible, hideModal, saveImage }) {
     
     const theme = useTheme();
     const [ disabled, setDisabled ] = useState(false);
     const [ filename, setFilename ] = useState('');
-    const [ selectedIndex, setSelectedIndex ] = useState(new IndexPath(0));
-    const selectedFomat = imageFormats[selectedIndex.row];
+    const [ selectedIndex, setSelectedIndex ] = useState(0);
 
     function clickSave() {
+
         setDisabled(true);
-        saveImage(filename, selectedFomat).finally(clearDataAndHideModal);
+        saveImage(filename, imageFormats[selectedIndex]).finally(clearDataAndHideModal);
     }
     function clearDataAndHideModal() {
 
@@ -42,26 +42,31 @@ export default function SaveModal({ visible, hideModal, saveImage }) {
             >
                 <Text style={{ fontFamily: 'Roboto-Bold', marginBottom: 25 }}>Desar Imatge</Text>
                 <Input
-                    style={{ ...styles.formItems, marginBottom: 20 }}
+                    textStyle={{ color: 'black' }}
+                    style={[styles.formItems, { marginBottom: 20 }]}
                     placeholder="ex: imatge"
                     value={filename}
                     onChangeText={val => setFilename(val)}
-                    label={props => <Text {...props} style={styles.baseLabel}>Nom</Text>}
+                    label={props => <Text {...props} style={[styles.baseLabel, { width: 50 }]}>Nom</Text>}
                     disabled={disabled}
                 />
-                <Select
-                    style={styles.formItems}
-                    placeHolder='JPG'
-                    value={selectedFomat}
+                <Text style={[
+                    styles.baseLabel,
+                    { width: 155 }
+                ]}>
+                    Format de la imagte
+                </Text>
+                <RadioGroup
+                    style={[styles.radioGroup, styles.formItems]}
                     selectedIndex={selectedIndex}
-                    onSelect={index => setSelectedIndex(index)}
-                    label='Format'
-                    disabled={disabled}
+                    onChange={index => setSelectedIndex(index)}
                 >
                     {imageFormats.map(format => 
-                        <SelectItem style={{ backgroundColor: 'white' }} title={format} />
+                        <Radio key={format}>
+                            {props => <Text {...props} style={{ color: 'black' }}>.{format}</Text>}
+                        </Radio>
                     )}
-                </Select>
+                </RadioGroup>
                 <View style={styles.footer}>
                     <Button
                         onPress={clearDataAndHideModal}
@@ -93,17 +98,26 @@ const styles = StyleSheet.create({
     },
     formItems: {
         backgroundColor: 'white',
-        color: 'black',
         borderColor: 'black',
         borderTopLeftRadius: 0,
     },
     baseLabel: {
         backgroundColor: 'white',
         color: 'black',
-        width: 50,
         borderTopLeftRadius: 10,
         borderTopRightRadius: 10,
         textAlign: 'center',
-        paddingTop: 1.5
+        paddingTop: 1.5,
+        fontSize: 15,
+        marginLeft: 1,
+    },
+    radioGroup: {
+        flex: 1,
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+        paddingHorizontal: 15,
+        borderRadius: 3.5,
+        paddingVertical: 1,
+        borderWidth: 1,
     }
 });

@@ -17,7 +17,21 @@ export default StyleSheet.create({
     },
     editorTool: {
         borderRadius: 0,
-        paddingHorizontal: 11,
+        width: '100%',
+        height: '75%'
+    },
+    editorToolContainer: {
+        flex: 1,
+        flexDirection: 'column',
+        alignItems: 'center',
+        width: 80,
+    },
+    editorToolText: {
+        textAlign: 'center',
+        fontSize: 12,
+        fontFamily: 'Roboto-Medium',
+        height: '25%',
+        width: '100%',
     },
     toolSettings: {
         height: 77,

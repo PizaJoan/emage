@@ -1,8 +1,6 @@
-import { Button } from '@ui-kitten/components';
 import VectorImage from 'react-native-vector-image';
-import EditorContext from './../../../lib/editorContext';
 
-import { pressTool } from './../../../lib/editorFunctions';
+import DefaultButton from './../../defaultButton';
 
 
 function ContrastIcon(props) {
@@ -16,25 +14,17 @@ function ContrastIcon(props) {
     />
 }
 
-export default function ContrastToolButton({ style, id, ...props }) {
-
-    const pressEditorTool = pressTool(id);
+export default function ContrastToolButton({ containerStyle, buttonStyle, textStyle, id, ...props }) {
 
     return (
-        <EditorContext.Consumer>
-            {(data) => (
-                <Button
-                    {...props}
-                    style={{
-                        ...style,
-                        paddingHorizontal: 22
-                    }}
-                    active={data.history.find(_ => _.key === id)?.active}
-                    accessoryLeft={ContrastIcon}
-                    size={'giant'}
-                    onPress={() => pressEditorTool(data)}
-                />
-            )}
-        </EditorContext.Consumer>
+        <DefaultButton
+            {...props}
+            id={id}
+            containerStyle={containerStyle}
+            buttonStyle={buttonStyle}
+            textStyle={textStyle}
+            icon={ContrastIcon}
+            text='Contrast'
+        />
     );
 }

@@ -1,11 +1,9 @@
-import { Button } from '@ui-kitten/components';
+import { View } from 'react-native';
 import VectorImage from 'react-native-vector-image';
-import EditorContext from './../../../lib/editorContext';
 
-import { pressTool } from './../../../lib/editorFunctions';
+import DefaultButton from './../../defaultButton';
 
-
-function ThermometerIcon(props) {
+function TintIcon(props) {
 
     return <VectorImage 
         source={require('./img/tint.svg')}
@@ -16,25 +14,17 @@ function ThermometerIcon(props) {
     />
 }
 
-export default function TintToolButton({ style, id, ...props }) {
-
-    const pressEditorTool = pressTool(id);
+export default function TintToolButton({ containerStyle, buttonStyle, textStyle, id, ...props }) {
 
     return (
-        <EditorContext.Consumer>
-            {(data) => (
-                <Button
-                    {...props}
-                    style={{
-                        ...style,
-                        paddingHorizontal: 24,
-                    }}
-                    active={data.history.find(_ => _.key === id)?.active}
-                    accessoryLeft={ThermometerIcon}
-                    size={'giant'}
-                    onPress={() => pressEditorTool(data)}
-                />
-            )}
-        </EditorContext.Consumer>
+        <DefaultButton
+            {...props}
+            id={id}
+            containerStyle={containerStyle}
+            buttonStyle={buttonStyle}
+            textStyle={textStyle}
+            icon={TintIcon}
+            text='Tint'
+        />
     );
 }
