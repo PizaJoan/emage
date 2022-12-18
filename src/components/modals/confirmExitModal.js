@@ -18,8 +18,8 @@ export default function ConfirmExitModal({ visible, hideModal, confirm }){
                 disabled={true}
                 style={[{ backgroundColor: theme['color-primary-600'] }, styles.card]}
             >
-                <Text style={styles.text}>Segur que vols sortir?</Text>
-                <View style={styles.footer}>
+                <Text style={[ styles.text, { marginBottom: 0 }]}>Segur que vols sortir?</Text>
+                <View style={[ styles.footer, { justifyContent: 'center' }]}>
                     <Button onPress={hideModal} >Cancel·lar</Button>
                     <Button
                         onPress={confirm}
