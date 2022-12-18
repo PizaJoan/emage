@@ -1,32 +1,57 @@
 import { TopNavigation, TopNavigationAction, Icon, useTheme } from '@ui-kitten/components';
-import { View } from 'react-native';
-
-import TopBackButton from './../topButtons/topBackButton';
 
 function SaveIcon(props) {
     
-    return <Icon {...props} name='save-outline' />
+    return <Icon {...props} name='save-outline' />;
 }
 
-export default function EditorHeader({ goBack, saveImage, style }) {
+function ExitIcon(props) {
+
+    return <Icon {...props} name='close-outline' />;
+}
+
+function ArrowLeft(props) {
+
+    return <Icon {...props} name='corner-up-left-outline' />;
+}
+
+function ArrowRight(props) {
+
+    return <Icon {...props} name='corner-up-right-outline' />;
+}
+
+export default function EditorHeader({ saveImage, exit, undo, redo, disabledUndo, disabledRedo, style }) {
 
     const theme = useTheme();
+    
+    function WrappedLeftAction() {
 
-    function WrappedBackButton() {
+        return (
+            <>
+                <TopNavigationAction icon={ExitIcon} onPress={exit} />
+                <TopNavigationAction icon={ArrowLeft} onPress={undo} disabled={disabledUndo} />
+                <TopNavigationAction icon={ArrowRight} onPress={redo} disabled={disabledRedo} />
+            </>
+        );
+    }
 
-        return (<View style={{ flex: 1, flexDirection: 'row' }}>
-            <TopBackButton goBack={goBack} />
+    function WrappedSaveButton() {
+
+        return (
             <TopNavigationAction
                 onPress={saveImage}
                 icon={SaveIcon}
             />
-        </View>);
+        );
     }
 
     return (
-        <TopNavigation
-            accessoryLeft={WrappedBackButton}
-            style={{ ...style, backgroundColor: theme['color-primary-default'] }}
-        />
+        <>
+            <TopNavigation
+                style={{ backgroundColor: theme['color-primary-default'], ...style }}
+                accessoryLeft={WrappedLeftAction}
+                accessoryRight={WrappedSaveButton}
+            />
+        </>
     );
 }

@@ -28,7 +28,12 @@ export function pressTool(key) {
             }
         } else {
 
-            if (state.history.length > 0) state.history.forEach(editAction => editAction.active = false);
+            if (state.history.length > 0) {
+
+                state.history.forEach(editAction => editAction.active = false);
+            }
+            
+            state.disabledUndo = false;
             state.history.push({
                 key: key,
                 active: true,
@@ -89,4 +94,48 @@ export function handleSaveImage(canvasRef, goHome) {
                 .catch(console.log);
         }
     }
+}
+
+export function handleUndo(state) {
+
+    const lastEdit = state.history.pop();
+
+    if (lastEdit.active) {
+        lastEdit.active = false;
+        state.activeTool = false;
+    }
+
+    state.undoHistory.push(lastEdit);
+
+    if (state.history.length < 1) state.disabledUndo = true;
+
+    state.disabledRedo = false;
+
+    state.updateState({ ...state});
+}
+
+export function handleRedo(state) {
+
+    let lastUndo = state.undoHistory.pop();
+    
+    if (state.undoHistory.length < 1) state.disabledRedo = true;
+    
+    if (state.history.length > 0) {
+
+        state.disabledUndo = false;
+
+        const actualLast = state.history.findIndex(action => lastUndo.key === action.key && action.active);
+        if (~actualLast) {
+            
+            lastUndo = {
+                ...lastUndo,
+                ...state.history[actualLast],
+            }
+            state.history.splice(actualLast);
+        }
+    }
+
+    state.history.push(lastUndo);
+
+    state.updateState({ ...state});
 }

@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { Text, PermissionsAndroid } from 'react-native';
+import { Text, PermissionsAndroid, Dimensions } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Button, Layout, useTheme } from '@ui-kitten/components';
 import { launchImageLibrary } from 'react-native-image-picker';

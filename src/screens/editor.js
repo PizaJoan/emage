@@ -5,46 +5,60 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { Gesture, GestureDetector, GestureHandlerRootView, ScrollView } from 'react-native-gesture-handler';
 import Animated, { SlideInLeft, SlideOutLeft, useAnimatedProps, useAnimatedStyle, useSharedValue, withTiming } from 'react-native-reanimated';
 import { Canvas, Image, useImage, useCanvasRef } from '@shopify/react-native-skia';
-import { CameraRoll } from '@react-native-camera-roll/camera-roll';
-import { appDownloadFolder, imageWidth, imageHeight, screenWidth, screenHeight, screenMidWidth, screenMidHeight, imageFormatsEquivalences } from '../lib/constants/variables';
-
-const RNFS = require('react-native-fs');
+import { imageWidth, imageHeight, screenWidth, screenMidWidth, screenMidHeight, screenHeight } from '../lib/constants/variables';
 
 import EditorContext from './../lib/editorContext'
 import EditorHeader from './../components/headers/editorHeader';
+import SaveModal from './../components/modals/saveModal';
+import ConfirmExitModal from './../components/modals/confirmExitModal';
 
 import styles from './../styles/editor.style';
 
-import { getItem } from './../lib/storage';
 import { TOOLS } from './../lib/constants/editorTools';
-import SaveModal from '../components/saveModal';
-import { handleSaveImage } from '../lib/editorFunctions';
+import { getItem } from './../lib/storage';
+import { handleRedo, handleSaveImage, handleUndo } from './../lib/editorFunctions';
 
 export default function EditorScreen({ navigation }) {
 
     const [ imageURL, setImageURL ] = useState('');
     const [ imageConfig, setImageConfig ] = useState(false);
     const [ showSaveModal, setShowSaveModal ] = useState(false);
+    const [ showExitModal, setShowExitModal ] = useState(false);
     const theme = useTheme();
     const image = useImage(imageURL);
     const [ state, setState ] = useState({
         activeTool: false,
         history: [],
+        undoHistory: [],
+        disabledUndo: true,
+        disabledRedo: true,
         updateState: updateState,
         imageWidth: imageWidth,
         imageHeight: imageHeight,
     });
-
+    console.log(state.history, state.undoHistory);
     useEffect(() => {
         
         getItem('actualImage').then(setImageURL).catch(console.log);
-        getItem('imageConfig').then(setImageConfig).catch(console.log);
+        getItem('imageConfig').then((value) => {
+            
+            setImageConfig({
+                scaleX: screenWidth / value.width,
+                scaleY: screenHeight / value.height,
+                width: value.width * screenWidth / value.width,
+                height: value.height * screenHeight / value.height,
+            });
+
+            console.log(showExitModal);
+
+        }).catch(console.log);
 
     }, []);
 
     function updateState(newState) {
         setState(newState);
     }
+
     const canvasRef = useCanvasRef();
     const scale = useSharedValue(1);
     const prevScale = useSharedValue(1);
@@ -172,7 +186,16 @@ export default function EditorScreen({ navigation }) {
     return (
         <SafeAreaView style={{ flex: 1 }}>
             <EditorContext.Provider value={state}>
-                <EditorHeader style={styles.bringFront} goBack={goHome} saveImage={() => setShowSaveModal(true)} />
+                <EditorHeader
+                    style={styles.bringFront}
+                    goBack={goHome}
+                    saveImage={() => setShowSaveModal(true)}
+                    exit={() => setShowExitModal(true)}
+                    undo={() => handleUndo(state)}
+                    redo={() => handleRedo(state)}
+                    disabledUndo={state.disabledUndo}
+                    disabledRedo={state.disabledRedo}
+                />
                 <Layout style={{ ...styles.layout, backgroundColor: theme['color-primary-800'] }}>
                     <GestureHandlerRootView>
                         <GestureDetector gesture={gestures}>
@@ -183,6 +206,10 @@ export default function EditorScreen({ navigation }) {
                                         height: imageHeight,
                                         marginHorizontal: 10,
                                         top: '10%',
+                                        // transform: [
+                                        //     { scaleX: imageConfig.scaleX },
+                                        //     { scaleY: imageConfig.scaleY },
+                                        // ]
                                     },
                                     animation
                                 ]}
@@ -283,6 +310,11 @@ export default function EditorScreen({ navigation }) {
                 visible={showSaveModal}
                 hideModal={() => setShowSaveModal(false)}
                 saveImage={handleSaveImage(canvasRef, goHome)}
+            />
+            <ConfirmExitModal
+                visible={showExitModal}
+                hideModal={() => setShowExitModal(false)}
+                confirm={goHome}
             />
         </SafeAreaView>
     );

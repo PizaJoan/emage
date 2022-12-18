@@ -16,6 +16,9 @@ import TemperatureToolShape from './../../components/editorComponents/temperatur
 import TintToolButton from './../../components/editorComponents/tint/tintToolButton';
 import TintToolSubmenu from './../../components/editorComponents/tint/tintToolSubmenu';
 import TintToolShape from './../../components/editorComponents/tint/tintToolShape';
+import GrayscaleToolButton from './../../components/editorComponents/grayscale/grayscaleToolButton';
+import GrayscaleToolSubmenu from './../../components/editorComponents/grayscale/grayscaleToolSubmenu';
+import GrayscaleToolShape from './../../components/editorComponents/grayscale/grayscaleToolShape';
 
 export const TOOLS = [
     // { Menu: CutToolButton, Submenu: CutToolSubmenu, key: 'CUT', Tool: CutToolShape },
@@ -24,4 +27,5 @@ export const TOOLS = [
     { Menu: ContrastToolButton, Submenu: ContrastToolSubmenu, key: 'CONTRAST', Tool: ContrastToolShape },
     { Menu: TemperatureToolButton, Submenu: TemperatureToolSubmenu, key: 'TEMPERATURE', Tool: TemperatureToolShape },
     { Menu: TintToolButton, Submenu: TintToolSubmenu, key: 'TINT', Tool: TintToolShape },
+    { Menu: GrayscaleToolButton, Submenu: GrayscaleToolSubmenu, key: 'GRAYSCALE', Tool: GrayscaleToolShape },
 ];

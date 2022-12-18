@@ -1,8 +1,11 @@
 import { useState } from 'react';
-import { StyleSheet, View, KeyboardAvoidingView, Platform } from 'react-native';
+import { StyleSheet, View } from 'react-native';
+import Animated, { BounceInRight, BounceOutLeft } from 'react-native-reanimated';
 import { Text, Modal, Card, Button, Input, Radio, RadioGroup, useTheme } from '@ui-kitten/components';
 
-import { imageFormats } from './../lib/constants/variables';
+import styles from './../../styles/modals.style';
+
+import { imageFormats } from './../../lib/constants/variables';
 
 export default function SaveModal({ visible, hideModal, saveImage }) {
     
@@ -10,8 +13,17 @@ export default function SaveModal({ visible, hideModal, saveImage }) {
     const [ disabled, setDisabled ] = useState(false);
     const [ filename, setFilename ] = useState('');
     const [ selectedIndex, setSelectedIndex ] = useState(0);
+    const [ valid, setvalid ] = useState(true);
 
     function clickSave() {
+
+        setvalid(true);
+
+        if (!filename || filename.length < 1) {
+
+            setvalid(false);
+            return;
+        } 
 
         setDisabled(true);
         saveImage(filename, imageFormats[selectedIndex]).finally(clearDataAndHideModal);
@@ -23,41 +35,58 @@ export default function SaveModal({ visible, hideModal, saveImage }) {
         hideModal();
     }
 
+    function changeText(value) {
+
+        if (!value) setvalid(false);
+        else setvalid(true);
+        
+        setFilename(value);
+    }
+
+    function AnimatedCaption() {
+
+        return (
+            !valid ?
+                (
+                    <Animated.View entering={BounceInRight.duration(150)} exiting={BounceOutLeft.duration(150)}>
+                        <Text style={{ color: 'red' }}>El nom és necessari</Text>
+                    </Animated.View>
+                ) :
+                null
+        );
+    }
+    console.log(valid);
+
     return (
         <Modal
             visible={visible}
             backdropStyle={styles.backdrop}
             onBackdropPress={clearDataAndHideModal}
-            style={{ width: '75%' }}
+            style={styles.modal}
         >
             <Card 
                 disabled={true}
-                style={{
-                    flex: 1,
-                    margin: 2,
-                    backgroundColor: theme['color-primary-700'],
-                    borderColor: 'transparent',
-                    borderRadius: 10
-                }}
+                style={[{ backgroundColor: theme['color-primary-600'] }, styles.card ]}
             >
-                <Text style={{ fontFamily: 'Roboto-Bold', marginBottom: 25 }}>Desar Imatge</Text>
+                <Text style={styles.text}>Desar Imatge</Text>
                 <Input
                     textStyle={{ color: 'black' }}
-                    style={[styles.formItems, { marginBottom: 20 }]}
+                    style={[saveModalStyle.formItems, { marginBottom: 20 }]}
                     placeholder="ex: imatge"
                     value={filename}
-                    onChangeText={val => setFilename(val)}
-                    label={props => <Text {...props} style={[styles.baseLabel, { width: 50 }]}>Nom</Text>}
+                    onChangeText={changeText}
+                    label={props => <Text {...props} style={[saveModalStyle.baseLabel, { width: 50 }]}>Nom</Text>}
                     disabled={disabled}
+                    caption={AnimatedCaption}
                 />
                 <Text style={[
-                    styles.baseLabel,
+                    saveModalStyle.baseLabel,
                     { width: 155 }
                 ]}>
                     Format de la imagte
                 </Text>
                 <RadioGroup
-                    style={[styles.radioGroup, styles.formItems]}
+                    style={[saveModalStyle.radioGroup, saveModalStyle.formItems]}
                     selectedIndex={selectedIndex}
                     onChange={index => setSelectedIndex(index)}
                 >
@@ -87,15 +116,7 @@ export default function SaveModal({ visible, hideModal, saveImage }) {
     );
 }
 
-const styles = StyleSheet.create({
-    backdrop: {
-        backgroundColor: 'rgba(0, 0, 0, 0.5)',
-    },
-    footer: {
-        flexDirection: 'row',
-        justifyContent: 'flex-end',
-        marginTop: 25
-    },
+const saveModalStyle = StyleSheet.create({
     formItems: {
         backgroundColor: 'white',
         borderColor: 'black',
