@@ -1,3 +1,3 @@
-import Emage from './src';
+import App from './src/index';
 
-export default Emage;
+export default App;

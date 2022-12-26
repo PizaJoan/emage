@@ -36,7 +36,7 @@ export default function EditorScreen({ navigation }) {
         imageWidth: imageWidth,
         imageHeight: imageHeight,
     });
-    console.log(state.history, state.undoHistory);
+
     useEffect(() => {
         
         getItem('actualImage').then(setImageURL).catch(console.log);
@@ -49,7 +49,7 @@ export default function EditorScreen({ navigation }) {
                 height: value.height * screenHeight / value.height,
             });
 
-            console.log(showExitModal);
+            // console.log(showExitModal);
 
         }).catch(console.log);
 

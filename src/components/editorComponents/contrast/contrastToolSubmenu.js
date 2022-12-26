@@ -1,5 +1,5 @@
 import { useMemo } from 'react';
-import { View, Platform } from 'react-native';
+import { View } from 'react-native';
 
 import DefaultSlider from './../../defaultSlider';
 import EditorContext from './../../../lib/editorContext';
