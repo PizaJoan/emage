@@ -6,6 +6,7 @@ import { Gesture, GestureDetector, GestureHandlerRootView, ScrollView } from 're
 import Animated, { SlideInLeft, SlideOutLeft, useAnimatedProps, useAnimatedStyle, useSharedValue, withTiming } from 'react-native-reanimated';
 import { Canvas, Image, useImage, useCanvasRef } from '@shopify/react-native-skia';
 import { imageWidth, imageHeight, screenWidth, screenMidWidth, screenMidHeight, screenHeight } from '../lib/constants/variables';
+import { useIsFocused } from '@react-navigation/native';
 
 import EditorContext from './../lib/editorContext'
 import EditorHeader from './../components/headers/editorHeader';
@@ -15,11 +16,12 @@ import ConfirmExitModal from './../components/modals/confirmExitModal';
 import styles from './../styles/editor.style';
 
 import { TOOLS } from './../lib/constants/editorTools';
-import { getItem } from './../lib/storage';
+import { getItem, removeItem, setItem } from './../lib/storage';
 import { handleRedo, handleSaveImage, handleUndo } from './../lib/editorFunctions';
 
 export default function EditorScreen({ navigation }) {
 
+    const isFocused = useIsFocused();
     const [ imageURL, setImageURL ] = useState('');
     const [ imageConfig, setImageConfig ] = useState(false);
     const [ showSaveModal, setShowSaveModal ] = useState(false);
@@ -38,22 +40,33 @@ export default function EditorScreen({ navigation }) {
     });
 
     useEffect(() => {
+
+        if (isFocused) {
+
+            getItem('actualImage').then(setImageURL).catch(console.log);
+            getItem('imageConfig').then((value) => {
+                
+                setImageConfig({
+                    scaleX: screenWidth / value.width,
+                    scaleY: screenHeight / value.height,
+                    width: value.width * screenWidth / value.width,
+                    height: value.height * screenHeight / value.height,
+                });
+                
+                getItem('lastWork').then(data => {
+                    
+                    if (!!data) {
+                        
+                        setState({
+                            ...state,
+                            ...data,
+                        });
+                    }
+                });
         
-        getItem('actualImage').then(setImageURL).catch(console.log);
-        getItem('imageConfig').then((value) => {
-            
-            setImageConfig({
-                scaleX: screenWidth / value.width,
-                scaleY: screenHeight / value.height,
-                width: value.width * screenWidth / value.width,
-                height: value.height * screenHeight / value.height,
-            });
-
-            // console.log(showExitModal);
-
-        }).catch(console.log);
-
-    }, []);
+            }).catch(console.log);   
+        }
+    }, [ isFocused ]);
 
     function updateState(newState) {
         setState(newState);
@@ -183,6 +196,29 @@ export default function EditorScreen({ navigation }) {
         navigation.goBack();
     }
 
+    function saveWork() {
+
+        
+        if (state.history.length > 0) {
+            
+            state.history = state.history.map(_ => {
+                _.active = false
+                return _;
+            });
+
+            setItem('lastWork', {
+                history: state.history,
+                disableRedo: state.disabledRedo,
+                disabledUndo: state.disabledUndo,
+                undoHistory: state.undoHistory,
+            }).then(goHome);
+
+        } else {
+            
+            removeItem('lastWork').then(goHome);
+        }
+    }
+
     return (
         <SafeAreaView style={{ flex: 1 }}>
             <EditorContext.Provider value={state}>
@@ -206,10 +242,6 @@ export default function EditorScreen({ navigation }) {
                                         height: imageHeight,
                                         marginHorizontal: 10,
                                         top: '10%',
-                                        // transform: [
-                                        //     { scaleX: imageConfig.scaleX },
-                                        //     { scaleY: imageConfig.scaleY },
-                                        // ]
                                     },
                                     animation
                                 ]}
@@ -305,17 +337,17 @@ export default function EditorScreen({ navigation }) {
                         </ScrollView>
                     </View>
                 </Layout>
+                <SaveModal
+                    visible={showSaveModal}
+                    hideModal={() => setShowSaveModal(false)}
+                    saveImage={handleSaveImage(canvasRef, goHome)}
+                />
+                <ConfirmExitModal
+                    visible={showExitModal}
+                    hideModal={() => setShowExitModal(false)}
+                    confirm={saveWork}
+                />
             </EditorContext.Provider>
-            <SaveModal
-                visible={showSaveModal}
-                hideModal={() => setShowSaveModal(false)}
-                saveImage={handleSaveImage(canvasRef, goHome)}
-            />
-            <ConfirmExitModal
-                visible={showExitModal}
-                hideModal={() => setShowExitModal(false)}
-                confirm={goHome}
-            />
         </SafeAreaView>
     );
 }

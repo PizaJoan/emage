@@ -1,10 +1,11 @@
 import { useEffect, useState } from 'react';
-import { Text, PermissionsAndroid } from 'react-native';
+import { Text, PermissionsAndroid, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Button, Layout, useTheme } from '@ui-kitten/components';
 import { launchImageLibrary } from 'react-native-image-picker';
+import { useIsFocused } from '@react-navigation/native';
 
-import { setItem } from './../lib/storage';
+import { getItem, setItem } from './../lib/storage';
 
 import HomeHeader from './../components/headers/homeHeader';
 import styles from './../styles/home.style';
@@ -12,8 +13,10 @@ import styles from './../styles/home.style';
 
 export default function HomeScreen({ navigation }) {
 
+    const isFocused = useIsFocused();
     const theme = useTheme();
     const [ permissionsGranted, setPermissionsGranted ] = useState(false);
+    const [ lastWork, setLastWork ] = useState(false);
     
     useEffect(() => {
 
@@ -47,7 +50,19 @@ export default function HomeScreen({ navigation }) {
 
         askForPermissions();
 
-    }, []);
+    }, [ isFocused ]);
+
+    useEffect(() => {
+
+        if (isFocused) {
+
+            getItem('lastWork').then(data => {
+                console.log(data);
+                if (!!data) setLastWork(true);
+            });
+        }
+
+    }, [ isFocused ]);
 
     function selectImage() {
 
@@ -81,12 +96,23 @@ export default function HomeScreen({ navigation }) {
         <SafeAreaView style={{ flex: 1 }}>
             <HomeHeader goSettings={() => navigation.navigate('Settings')} />
             <Layout style={{ flex: 1, backgroundColor: theme['color-primary-800'], ...styles.layout }}>
-                {/* TODO: guardar estat treball */}
                 {
                     permissionsGranted ?
-                        <Button onPress={selectImage}>
-                            Selecciona la imatge
-                        </Button> :
+                        <>
+                            {
+                                lastWork && (
+                                    <Button
+                                        style={{ marginBottom: 25 }}
+                                        onPress={() => navigation.navigate('Editor')}
+                                    >
+                                        Continuar el treball anterior
+                                    </Button>
+                                )
+                            }
+                            <Button onPress={selectImage}>
+                                Selecciona la imatge
+                            </Button> 
+                        </> :
                         <Text>Calen permisos per poder emprar l'aplicació</Text>
                 }
             </Layout>

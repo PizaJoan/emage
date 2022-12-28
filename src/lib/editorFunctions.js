@@ -1,6 +1,7 @@
 import { CameraRoll } from '@react-native-camera-roll/camera-roll';
 const RNFS = require('react-native-fs');
 
+import { removeItem } from './storage';
 import { appDownloadFolder, imageFormatsEquivalences } from './constants/variables';
 
 
@@ -80,18 +81,20 @@ export function handleSaveImage(canvasRef, goHome) {
         
         function writeImage() {
             
-            const filePath = appDownloadFolder + `/${filename}.${format}`;
-            
-            return RNFS.writeFile(filePath, bytes, 'base64')
-                .then(() => {
-                    
-                    CameraRoll.save(filePath, { type: 'photo' }).then(() => {
+            return removeItem('lastWork').then(() => {
+
+                const filePath = appDownloadFolder + `/${filename}.${format}`;
+                
+                return RNFS.writeFile(filePath, bytes, 'base64')
+                    .then(() => {
                         
-                        RNFS.unlink(filePath).catch(console.log);
-                    });
-                    
-                })
-                .catch(console.log);
+                        CameraRoll.save(filePath, { type: 'photo' }).then(() => {
+                            
+                            RNFS.unlink(filePath).catch(console.log);
+                        });
+                        
+                    }).catch(console.log);
+            });
         }
     }
 }

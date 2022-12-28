@@ -55,7 +55,6 @@ export default function SaveModal({ visible, hideModal, saveImage }) {
                 null
         );
     }
-    console.log(valid);
 
     return (
         <Modal
