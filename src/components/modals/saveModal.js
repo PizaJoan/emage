@@ -64,7 +64,7 @@ export default function SaveModal({ visible, hideModal, saveImage }) {
             style={styles.modal}
         >
             <Card 
-                disabled={true}
+                disabled
                 style={[{ backgroundColor: theme['color-primary-600'] }, styles.card ]}
             >
                 <Text style={styles.text}>Desar Imatge</Text>

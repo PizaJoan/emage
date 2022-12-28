@@ -19,7 +19,7 @@ export default function ConfirmExitModal({ visible, hideModal, confirm }){
                     style={styles.modal}
                     >
                     <Card
-                        disabled={true}
+                        disabled
                         style={[{ backgroundColor: theme['color-primary-600'] }, styles.card]}
                         >
                         <Text style={[ styles.text, { marginBottom: 0 }]}>
@@ -28,7 +28,13 @@ export default function ConfirmExitModal({ visible, hideModal, confirm }){
                             }
                         </Text>
                         <View style={[ styles.footer, { justifyContent: 'center' }]}>
-                            <Button onPress={hideModal} >Cancel·lar</Button>
+                            <Button onPress={hideModal}>
+                                {
+                                    data?.history?.length ?
+                                        'Sortir sense desar' :
+                                        'Cancel·lar'
+                                }
+                            </Button>
                             <Button
                                 onPress={confirm}
                                 style={{ marginLeft: 15 }}

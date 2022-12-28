@@ -47,13 +47,20 @@ export function pressTool(key) {
 
 export function handleSubmenuTool(key) {
 
-    return function (state, data) {
+    return function (state, data, remove) {
 
         const editActionIndex = state.history.findIndex(editAction => editAction.key === key);
 
-        state.history[editActionIndex].data = {
-            ...state.history[editActionIndex].data,
-            ...data,
+        if (remove) {
+
+            state.history[editActionIndex].data = {};
+   
+        } else {
+
+            state.history[editActionIndex].data = {
+                ...state.history[editActionIndex].data,
+                ...data,
+            }
         }
 
         state.updateState({ ...state });

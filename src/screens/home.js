@@ -5,7 +5,7 @@ import { Button, Layout, useTheme } from '@ui-kitten/components';
 import { launchImageLibrary } from 'react-native-image-picker';
 import { useIsFocused } from '@react-navigation/native';
 
-import { getItem, setItem } from './../lib/storage';
+import { getItem, removeItem, setItem } from './../lib/storage';
 
 import HomeHeader from './../components/headers/homeHeader';
 import styles from './../styles/home.style';
@@ -83,7 +83,8 @@ export default function HomeScreen({ navigation }) {
                         size: res.assets[0].fileSize,
                     }),
                     // URI de la imagte
-                    setItem('actualImage', res.assets[0].uri)
+                    setItem('actualImage', res.assets[0].uri),
+                    removeItem('lastWork'),
                 ]).then(() => {
                     navigation.navigate('Editor');
                 });

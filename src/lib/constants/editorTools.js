@@ -19,9 +19,13 @@ import TintToolShape from './../../components/editorComponents/tint/tintToolShap
 import GrayscaleToolButton from './../../components/editorComponents/grayscale/grayscaleToolButton';
 import GrayscaleToolSubmenu from './../../components/editorComponents/grayscale/grayscaleToolSubmenu';
 import GrayscaleToolShape from './../../components/editorComponents/grayscale/grayscaleToolShape';
+import PredefinedFiltersToolButton from './../../components/editorComponents/predefinedFilters/predefinedFiltersToolButton';
+import PredefinedFiltersToolSubmenu from './../../components/editorComponents/predefinedFilters/predefinedFiltersToolSubmenu';
+import PredefinedFiltersToolShape from './../../components/editorComponents/predefinedFilters/predefinedFiltersToolShape';
 
 export const TOOLS = [
     // { Menu: CutToolButton, Submenu: CutToolSubmenu, key: 'CUT', Tool: CutToolShape },
+    { Menu: PredefinedFiltersToolButton, Submenu: PredefinedFiltersToolSubmenu, key: 'FILTERS', Tool: PredefinedFiltersToolShape },
     { Menu: BrighnessToolButton, Submenu: BrightnessToolSubmenu, key: 'BRIGHTNESS', Tool: BrightnessToolShape },
     { Menu: SaturationToolButton, Submenu: SaturationToolSubmenu, key: 'SATURATION', Tool: SaturationToolShape},
     { Menu: ContrastToolButton, Submenu: ContrastToolSubmenu, key: 'CONTRAST', Tool: ContrastToolShape },

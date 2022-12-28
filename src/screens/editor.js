@@ -219,6 +219,19 @@ export default function EditorScreen({ navigation }) {
         }
     }
 
+    function hideModal() {
+
+        if (state.history.length > 0) {
+
+            setShowExitModal(false);
+            goHome();
+
+        } else {
+
+            setShowExitModal(false);
+        }
+    }
+
     return (
         <SafeAreaView style={{ flex: 1 }}>
             <EditorContext.Provider value={state}>
@@ -313,11 +326,11 @@ export default function EditorScreen({ navigation }) {
                                 null
                         }
                         <ScrollView 
-                            horizontal={true}
+                            horizontal
+                            centerContent
                             showsHorizontalScrollIndicator={false}
                             bounces={false}
                             overScrollMode={'never'}
-                            centerContent={true}
                             style={{
                                 ...styles.bringFront,
                                 backgroundColor: theme['color-primary-default'],
@@ -344,7 +357,7 @@ export default function EditorScreen({ navigation }) {
                 />
                 <ConfirmExitModal
                     visible={showExitModal}
-                    hideModal={() => setShowExitModal(false)}
+                    hideModal={hideModal}
                     confirm={saveWork}
                 />
             </EditorContext.Provider>
