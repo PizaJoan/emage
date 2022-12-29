@@ -4,5 +4,5 @@ export default function PredefinedFiltersToolShape(props) {
 
     if (!props.colorMatrix) return;
 
-    return <ColorMatrix matrix={props.colorMatrix} />;
+    return <ColorMatrix matrix={props.colorMatrix.flat()} />;
 }

@@ -4,5 +4,5 @@ export default function SaturationToolShape(props) {
 
     if (!props.colorMatrix) return;
 
-    return <ColorMatrix matrix={props.colorMatrix} />;
+    return <ColorMatrix matrix={props.colorMatrix.flat()} />;
 }

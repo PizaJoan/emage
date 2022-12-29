@@ -20,7 +20,11 @@ export async function setItem(key, value) {
 
     const actualItem = JSON.parse(await AsyncStorage.getItem(key));
 
-    if (null != actualItem && typeof actualItem === 'object') operation = 'mergeItem';
+    if (
+        null != actualItem &&
+        typeof actualItem === 'object' &&
+        !Array.isArray(value)
+    ) operation = 'mergeItem';
 
     return await setOrMergeItem(key, value, operation);
 }

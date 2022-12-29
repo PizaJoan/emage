@@ -10,10 +10,10 @@ export default function BrightnessSubmenu({ id }) {
     const handleSubmenuEditTool = handleSubmenuTool(id);
 
     const colorMatrix = [
-        1, 0, 0, 0, 0,
-        0, 1, 0, 0, 0,
-        0, 0, 1, 0, 0,
-        0, 0, 0, 1, 0,
+        [ 1, 0, 0, 0, 0 ],
+        [ 0, 1, 0, 0, 0 ],
+        [ 0, 0, 1, 0, 0 ],
+        [ 0, 0, 0, 1, 0 ],
     ];
 
     const changeValue = useMemo(() => 
@@ -21,9 +21,9 @@ export default function BrightnessSubmenu({ id }) {
 
             value = Array.isArray(value) ? value[0] : value;
         
-            colorMatrix[4] = value;
-            colorMatrix[9] = value;
-            colorMatrix[14] = value;
+            colorMatrix[0][4] = value;
+            colorMatrix[1][4] = value;
+            colorMatrix[2][4] = value;
 
             handleSubmenuEditTool(data, {
                 colorMatrix,

@@ -11,10 +11,10 @@ export default function ContrastToolSubmenu({ id }) {
     const handleSubmenuEditTool = handleSubmenuTool(id);
 
     const colorMatrix = [
-        1, 0, 0, 0, 0,
-        0, 1, 0, 0, 0,
-        0, 0, 1, 0, 0,
-        0, 0, 0, 1, 0,
+        [ 1, 0, 0, 0, 0 ],
+        [ 0, 1, 0, 0, 0 ],
+        [ 0, 0, 1, 0, 0 ],
+        [ 0, 0, 0, 1, 0 ],
     ];
 
     const changeValue = useMemo(() => 
@@ -24,12 +24,12 @@ export default function ContrastToolSubmenu({ id }) {
 
             const n = 0.5 * (1 - value);
 
-            colorMatrix[0] = value;
-            colorMatrix[4] = n;
-            colorMatrix[6] = value;
-            colorMatrix[9] = n;
-            colorMatrix[12] = value;
-            colorMatrix[14] = n;
+            colorMatrix[0][0] = value;
+            colorMatrix[0][4] = n;
+            colorMatrix[1][1] = value;
+            colorMatrix[1][4] = n;
+            colorMatrix[2][2] = value;
+            colorMatrix[2][4] = n;
 
             handleSubmenuEditTool(data, {
                 colorMatrix,

@@ -10,10 +10,10 @@ export default function TemperatureToolSubmenu({ id }) {
     const handleSubmenuEditTool = handleSubmenuTool(id);
 
     const colorMatrix = [
-        1, 0, 0, 0, 0,
-        0, 1, 0, 0, 0,
-        0, 0, 1, 0, 0,
-        0, 0, 0, 1, 0,
+        [ 1, 0, 0, 0, 0 ],
+        [ 0, 1, 0, 0, 0 ],
+        [ 0, 0, 1, 0, 0 ],
+        [ 0, 0, 0, 1, 0 ],
     ];
 
     const changeValue = useMemo(() => 
@@ -21,8 +21,8 @@ export default function TemperatureToolSubmenu({ id }) {
 
             value = Array.isArray(value) ? value[0] : value;
         
-            colorMatrix[0] = 1 + value;
-            colorMatrix[12] = 1 - value;
+            colorMatrix[0][0] = 1 + value;
+            colorMatrix[2][2] = 1 - value;
 
             handleSubmenuEditTool(data, {
                 colorMatrix,

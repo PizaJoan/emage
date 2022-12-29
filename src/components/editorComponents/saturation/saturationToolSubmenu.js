@@ -10,10 +10,10 @@ export default function SaturationToolSubmenu({ id }) {
     const handleSubmenuEditTool = handleSubmenuTool(id);
 
     const colorMatrix = [
-        1, 0, 0, 0, 0,
-        0, 1, 0, 0, 0,
-        0, 0, 1, 0, 0,
-        0, 0, 0, 1, 0,
+        [ 1, 0, 0, 0, 0 ],
+        [ 0, 1, 0, 0, 0 ],
+        [ 0, 0, 1, 0, 0 ],
+        [ 0, 0, 0, 1, 0 ],
     ];
 
     const changeValue = useMemo(() => 
@@ -21,15 +21,15 @@ export default function SaturationToolSubmenu({ id }) {
 
             value = Array.isArray(value) ? value[0] : value;
 
-            colorMatrix[0] = 0.213 + 0.787 * value;
-            colorMatrix[1] = 0.715 - 0.715 * value;
-            colorMatrix[2] = 0.072 - 0.072 * value;
-            colorMatrix[5] = 0.213 - 0.213 * value;
-            colorMatrix[6] = 0.715 + 0.285 * value;
-            colorMatrix[7] = 0.072 - 0.072 * value;
-            colorMatrix[10] = 0.213 - 0.213 * value;
-            colorMatrix[11] = 0.715 - 0.715 * value;
-            colorMatrix[12] = 0.072 + 0.928 * value;
+            colorMatrix[0][0] = 0.213 + 0.787 * value;
+            colorMatrix[0][1] = 0.715 - 0.715 * value;
+            colorMatrix[0][2] = 0.072 - 0.072 * value;
+            colorMatrix[1][0] = 0.213 - 0.213 * value;
+            colorMatrix[1][1] = 0.715 + 0.285 * value;
+            colorMatrix[1][2] = 0.072 - 0.072 * value;
+            colorMatrix[2][0] = 0.213 - 0.213 * value;
+            colorMatrix[2][1] = 0.715 - 0.715 * value;
+            colorMatrix[2][2] = 0.072 + 0.928 * value;
 
             handleSubmenuEditTool(data, {
                 colorMatrix,

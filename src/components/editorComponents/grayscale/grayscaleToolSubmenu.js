@@ -11,10 +11,10 @@ export default function GrayscaleToolSubmenu({ id }) {
     const handleSubmenuEditTool = handleSubmenuTool(id);
 
     const colorMatrix = [
-        1, 0, 0, 0, 0,
-        0, 1, 0, 0, 0,
-        0, 0, 1, 0, 0,
-        0, 0, 0, 1, 0,
+        [ 1, 0, 0, 0, 0 ],
+        [ 0, 1, 0, 0, 0 ],
+        [ 0, 0, 1, 0, 0 ],
+        [ 0, 0, 0, 1, 0 ],
     ];
 
     const changeValue = useMemo(() => 
@@ -24,15 +24,15 @@ export default function GrayscaleToolSubmenu({ id }) {
 
             const clampValue = clamp(1 - value, 0, 1);
 
-            colorMatrix[0] = 0.2126 + 0.7874 * clampValue;
-            colorMatrix[1] = 0.7152 - 0.7152 * clampValue;
-            colorMatrix[2] = 0.0722 - 0.0722 * clampValue;
-            colorMatrix[5] = 0.2126 - 0.2126 * clampValue;
-            colorMatrix[6] = 0.7152 + 0.2848 * clampValue;
-            colorMatrix[7] = 0.0722 - 0.0722 * clampValue;
-            colorMatrix[10] = 0.2126 - 0.2126 * clampValue;
-            colorMatrix[11] = 0.7152 - 0.7152 * clampValue;
-            colorMatrix[12] = 0.0722 + 0.9278 * clampValue;
+            colorMatrix[0][0] = 0.2126 + 0.7874 * clampValue;
+            colorMatrix[0][1] = 0.7152 - 0.7152 * clampValue;
+            colorMatrix[0][2] = 0.0722 - 0.0722 * clampValue;
+            colorMatrix[1][0] = 0.2126 - 0.2126 * clampValue;
+            colorMatrix[1][1] = 0.7152 + 0.2848 * clampValue;
+            colorMatrix[1][2] = 0.0722 - 0.0722 * clampValue;
+            colorMatrix[2][0] = 0.2126 - 0.2126 * clampValue;
+            colorMatrix[2][1] = 0.7152 - 0.7152 * clampValue;
+            colorMatrix[2][2] = 0.0722 + 0.9278 * clampValue;
 
             handleSubmenuEditTool(data, {
                 colorMatrix,
