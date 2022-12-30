@@ -37,5 +37,5 @@ function multiply(matA, matB) {
         row.map((val, j) => 
             matA[i].reduce((sum, elem, k) => sum + elem * matB[k][j], 0)
         )
-    )
+    );
 }

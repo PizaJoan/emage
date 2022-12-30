@@ -219,7 +219,7 @@ export default function EditorScreen({ navigation }) {
         }
     }
 
-    function hideModal() {
+    function hideModalAndGoHome() {
 
         if (state.history.length > 0) {
 
@@ -230,6 +230,10 @@ export default function EditorScreen({ navigation }) {
 
             setShowExitModal(false);
         }
+    }
+
+    function hideModal() {
+        setShowExitModal(false);
     }
 
     return (
@@ -358,6 +362,7 @@ export default function EditorScreen({ navigation }) {
                 <ConfirmExitModal
                     visible={showExitModal}
                     hideModal={hideModal}
+                    hideModalAndGoHome={hideModalAndGoHome}
                     confirm={saveWork}
                 />
             </EditorContext.Provider>

@@ -11,6 +11,7 @@ import { default as theme } from './../theme.json';
 import HomeScreen from './screens/home';
 import SettingsScreen from './screens/settings';
 import EditorScreen from './screens/editor';
+import UserManual from './screens/userManual';
 
 const { Navigator, Screen } = createNativeStackNavigator();
 
@@ -18,6 +19,7 @@ const screens = [
     { name: 'Home', component: HomeScreen },
     { name: 'Settings', component: SettingsScreen },
     { name: 'Editor', component: EditorScreen },
+    { name: 'UserManual', component: UserManual },
 ]
 
 export default function Emage() {

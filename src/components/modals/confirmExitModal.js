@@ -5,7 +5,7 @@ import EditorContext from './../../lib/editorContext';
 
 import styles from './../../styles/modals.style';
 
-export default function ConfirmExitModal({ visible, hideModal, confirm }){
+export default function ConfirmExitModal({ visible, hideModal, hideModalAndGoHome, confirm }){
 
     const theme = useTheme();
 
@@ -28,7 +28,7 @@ export default function ConfirmExitModal({ visible, hideModal, confirm }){
                             }
                         </Text>
                         <View style={[ styles.footer, { justifyContent: 'center' }]}>
-                            <Button onPress={hideModal}>
+                            <Button onPress={hideModalAndGoHome}>
                                 {
                                     data?.history?.length ?
                                         'Sortir sense desar' :
